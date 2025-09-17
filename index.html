@@ -158,11 +158,11 @@
   <div class="container text-center">
     <h2>গ্যালারি</h2>
     <div class="row g-3 justify-content-center">
-      <div class="col-md-3"><img src="event2.jpg" alt="Event 1" class="img-fluid gallery-img"></div>
+      <div class="col-md-3"><img src="event1.jpg" alt="Event 1" class="img-fluid gallery-img"></div>
       <div class="col-md-3"><img src="event2.jpg" alt="Event 2" class="img-fluid gallery-img"></div>
-      <div class="col-md-3"><img src="event2.jpg" alt="Event 3" class="img-fluid gallery-img"></div>
+      <div class="col-md-3"><img src="event1.jpg" alt="Event 3" class="img-fluid gallery-img"></div>
       <div class="col-md-3"><img src="event2.jpg" alt="Event 4" class="img-fluid gallery-img"></div>
-      <div class="col-md-3"><img src="event2.jpg" alt="Event 5" class="img-fluid gallery-img"></div>
+      <div class="col-md-3"><img src="event1.jpg" alt="Event 5" class="img-fluid gallery-img"></div>
     </div>
   </div>
 </section>
@@ -279,7 +279,29 @@
 </footer>
 
 <!-- Lightbox -->
-<div id="lightbox"><img src="" alt="Lightbox"></div>
+<div id="lightbox">
+  <span class="prev">&#10094;</span>
+  <img src="" alt="Lightbox">
+  <span class="next">&#10095;</span>
+</div>
+
+<style>
+  #lightbox span {
+    position: absolute;
+    top: 50%;
+    font-size: 3rem;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    transform: translateY(-50%);
+  }
+  #lightbox .prev { left: 20px; }
+  #lightbox .next { right: 20px; }
+  #lightbox span:hover { background: rgba(0,0,0,0.8); }
+</style>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -288,13 +310,48 @@
 <script>
   const lightbox = document.getElementById('lightbox');
   const lbImage = lightbox.querySelector('img');
-  document.querySelectorAll('.gallery-img').forEach(img => {
-    img.addEventListener('click', () => {
-      lightbox.style.display = 'flex';
-      lbImage.src = img.src;
-    });
+  const galleryImages = document.querySelectorAll('.gallery-img');
+  const prevBtn = document.querySelector('#lightbox .prev');
+  const nextBtn = document.querySelector('#lightbox .next');
+  let currentIndex = 0;
+
+  function showImage(index) {
+    if (index < 0) index = galleryImages.length - 1;
+    if (index >= galleryImages.length) index = 0;
+    currentIndex = index;
+    lbImage.src = galleryImages[currentIndex].src;
+    lightbox.style.display = 'flex';
+  }
+
+  galleryImages.forEach((img, index) => {
+    img.addEventListener('click', () => showImage(index));
   });
-  lightbox.addEventListener('click', () => { lightbox.style.display = 'none'; });
+
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showImage(currentIndex - 1);
+  });
+
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showImage(currentIndex + 1);
+  });
+
+  // Close lightbox on background click
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target === lbImage) {
+      lightbox.style.display = 'none';
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.style.display === 'flex') {
+      if (e.key === 'ArrowLeft') showImage(currentIndex - 1);
+      if (e.key === 'ArrowRight') showImage(currentIndex + 1);
+      if (e.key === 'Escape') lightbox.style.display = 'none';
+    }
+  });
 </script>
 
 </body>
